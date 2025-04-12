@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Supabase Login</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  </head>
+  <body>
+    <h2>Login</h2>
+    <input type="email" id="email" placeholder="Email" />
+    <input type="password" id="password" placeholder="Password" />
+    <button onclick="login()">Login</button>
+
+    <pre id="tokenOutput"></pre>
+
+    <script>
+      const SUPABASE_URL = "https://ozftcqjtwtpmalmojnzp.supabase.co"; 
+      const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im96ZnRjcWp0d3RwbWFsbW9qbnpwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM3OTU0NjAsImV4cCI6MjA1OTM3MTQ2MH0.vv6WXXl7coOSfE5kkAHUs__cPK0t6VsY3eWmc2vak-A";                
+
+      // ✅ Make sure supabase is defined AFTER the CDN loads
+      const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+      async function login() {
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+
+        if (error) {
+          alert("Login failed: " + error.message);
+          console.error("Login error:", error);
+          return;
+        }
+
+        const token = data.session?.access_token;
+        if (!token) {
+          alert("No token returned");
+          return;
+        }
+
+        document.getElementById("tokenOutput").textContent = "JWT Token:\n\n" + token;
+        console.log("JWT Token:", token);
+      }
+    </script>
+  </body>
+</html>
+
