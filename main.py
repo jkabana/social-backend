@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.security import HTTPBearer
 from fastapi.openapi.utils import get_openapi
+from fastapi.responses import JSONResponse  # ✅ New import
 
 # ✅ Import your route modules
 from routes import auth_instagram, instagram_accounts
@@ -14,6 +15,11 @@ app = FastAPI(
         {"name": "Instagram Auth", "description": "Instagram OAuth endpoints"},
     ],
 )
+
+# ✅ Root route to satisfy Meta verification
+@app.get("/")
+def root():
+    return JSONResponse(content={"message": "Backend is live!"})
 
 # ✅ Include routers
 app.include_router(auth_instagram.router, tags=["Instagram Auth"])
