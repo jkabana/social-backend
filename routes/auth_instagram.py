@@ -35,3 +35,10 @@ def get_instagram_login_url():
     )
     return {"login_url": login_url}
 
+from fastapi.responses import JSONResponse
+from fastapi import Request
+
+@router.get("/auth/instagram/callback")
+def instagram_callback(request: Request):
+    return JSONResponse(content={"message": "Instagram callback received"})
+
