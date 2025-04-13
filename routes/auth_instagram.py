@@ -1,9 +1,10 @@
-from fastapi import APIRouter, Request, HTTPException
+from fastapi import APIRouter, Request, HTTPException, Header, Depends
 from fastapi.responses import JSONResponse
 from dotenv import load_dotenv
 import os
 import requests
 from supabase import create_client
+from jose import jwt
 
 # Load env vars
 load_dotenv()
@@ -21,6 +22,23 @@ SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
+# Token verification function
+def get_user_id_from_token(authorization: str = Header(...)):
+    if not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Invalid authorization header")
+
+    token = authorization.replace("Bearer ", "")
+    try:
+        decoded_token = jwt.decode(
+            token,
+            os.getenv("SUPABASE_JWT_SECRET"),
+            algorithms=["HS256"],
+            audience=os.getenv("JWT_AUDIENCE", "authenticated")
+        )
+        return decoded_token["sub"]
+    except Exception as e:
+        raise HTTPException(status_code=401, detail=f"Token decode failed: {str(e)}")
+
 # Login URL route
 @router.get("/auth/instagram/login-url")
 def get_instagram_login_url():
@@ -35,7 +53,10 @@ def get_instagram_login_url():
 
 # Callback route
 @router.get("/auth/instagram/callback")
-def instagram_callback(request: Request):
+def instagram_callback(
+    request: Request,
+    user_id: str = Depends(get_user_id_from_token)
+):
     code = request.query_params.get("code")
     if not code:
         raise HTTPException(status_code=400, detail="Missing code parameter")
@@ -66,6 +87,7 @@ def instagram_callback(request: Request):
 
     # Save to Supabase
     result = supabase.table("instagram_accounts").insert({
+        "user_id": user_id,
         "instagram_user_id": instagram_user_id,
         "username": instagram_username,
         "access_token": access_token,
