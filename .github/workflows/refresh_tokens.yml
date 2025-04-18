@@ -2,8 +2,8 @@ name: Refresh Instagram Tokens
 
 on:
   schedule:
-    - cron: "0 2 * * *"  # Every day at 2am UTC
-  workflow_dispatch:     # Enables manual trigger from GitHub UI
+    - cron: "0 2 * * *"
+  workflow_dispatch:
 
 jobs:
   refresh:
