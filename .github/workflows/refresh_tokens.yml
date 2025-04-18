@@ -1,0 +1,16 @@
+name: Refresh Instagram Tokens
+
+on:
+  schedule:
+    - cron: "0 2 * * *"  # Every day at 2am UTC
+  workflow_dispatch:     # Enables manual trigger from GitHub UI
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call refresh-tokens endpoint
+        run: |
+          curl -X POST https://social-backend-6ghv.onrender.com/refresh-tokens \
+            -H "X-CRON-SECRET: X36912067"
+
