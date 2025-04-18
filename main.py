@@ -4,7 +4,7 @@ from fastapi.openapi.utils import get_openapi
 from fastapi.responses import JSONResponse  # ✅ New import
 
 # ✅ Import your route modules
-from routes import auth_instagram, instagram_accounts
+from routes import auth_instagram, instagram_accounts, refresh_tokens
 
 app = FastAPI(
     title="Social Media API",
