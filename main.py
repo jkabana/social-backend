@@ -49,3 +49,6 @@ def custom_openapi():
 
 app.openapi = custom_openapi
 
+from routes import refresh_tokens
+app.include_router(refresh_tokens.router, tags=["Token Refresh"])
+
